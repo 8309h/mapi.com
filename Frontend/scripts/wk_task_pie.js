@@ -24,59 +24,58 @@ Pie.addEventListener("click", () => {
 
 // start---------------------------
 
-function createChart() {
-  fetch("https://zany-lime-swordfish-cuff.cyclic.app/tasks", {
-    headers: {
-      Authorization: localStorage.getItem("token"),
-    },
+function generateTaskStatusPieChart() {
+  // Make a fetch request to backend to get task status counts
+  fetch('http://localhost:5000/api/tasks/pie-chart', {
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
+      }
   })
-    .then((res) => res.json())
-    .then((data) => {
-      const labels = ["completed", "in_progress", "stuck"];
-      const tasks = data.tasks;
-      const counts = [
-        tasks.filter((task) => task.status == "completed").length,
-        tasks.filter((task) => task.status == "in_progress").length,
-        tasks.filter((task) => task.status == "stuck").length,
-      ];
-      const ctx = document.getElementById("myChart").getContext("2d");
-      const chart = new Chart(ctx, {
-        type: "pie",
-        data: {
-          labels: labels,
-          datasets: [
-            {
-              label: "Tasks based on Status",
-              data: counts,
+  .then(response => response.json())
+  .then(data => {
+
+       console.log("hi from piieeee")
+      // Extract task status counts from response
+      const completedCount = data.completed || 0;
+      const inProgressCount = data.in_progress || 0;
+      const stuckCount = data.stuck || 0;
+
+      // Prepare data for the pie chart
+      const taskStatusData = {
+          labels: ['Completed', 'In Progress', 'Stuck'],
+          datasets: [{
+              label: 'Task Status',
+              data: [completedCount, inProgressCount, stuckCount],
               backgroundColor: [
-                "rgba(1, 200, 117, 0.9)",
-                "rgba(253, 171, 61, 0.9)",
-                "rgba(226, 68, 91, 0.9)",
+                  'rgb(14,210,159)',
+                  'rgb(226,68,91)',
+                  'rgb(253,171,61)',
               ],
               borderColor: [
-                "rgba(1, 200, 117, 1)",
-                "rgba(253, 171, 61, 1)",
-                "rgba(226, 68, 91, 1)",
+                  'rgba(75, 192, 192, 1)',
+                  'rgba(255, 206, 86, 1)',
+                  'rgba(255, 99, 132, 1)',
               ],
-              borderWidth: 1,
-            },
-          ],
-        },
-        options: {
-          scales: {
-            y: {
-              beginAtZero: true,
-            },
-          },
-          barThickness: 130,
-        },
+              borderWidth: 1
+          }]
+      };
+
+      // Get canvas element to render the pie chart
+      const ctx = document.getElementById('myChart').getContext('2d');
+
+      // Create the pie chart
+      const taskStatusPieChart = new Chart(ctx, {
+          type: 'pie',
+          data: taskStatusData,
       });
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+  })
+  .catch(error => {
+      console.error('Error fetching task status counts:', error);
+      // Handle error
+  });
 }
-createChart();
+window.onload = generateTaskStatusPieChart()
 
 //  end--------------------------
 
@@ -88,9 +87,11 @@ hmpgredirect.addEventListener("click", () => {
 
 let logout = document.getElementById("logout");
 
+
+
 logout.addEventListener("click", () => {
-  localStorage.removeItem("token");
-  localStorage.removeItem("email");
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("mapiuser");
   alert("Logout Successful");
   window.location.href = "../index.html";
 });

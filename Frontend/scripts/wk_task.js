@@ -597,6 +597,12 @@ function filterTasksByTaskName(taskName) {
 
 // redirect to chart page-----------//
 
+let table = document.getElementById("Table");
+
+Table.addEventListener("click", () => {
+  window.location.href = "../pages/wk_task_tab.html";
+});
+
 let Gantt = document.getElementById("Gantt");
 
 Gantt.addEventListener("click", () => {
@@ -620,8 +626,8 @@ hmpgredirect.addEventListener("click", () => {
 let logout = document.getElementById("logout");
 
 logout.addEventListener("click", () => {
-  localStorage.removeItem("token");
-  localStorage.removeItem("email");
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("mapiuser");
   alert("Logout Successful");
   window.location.href = "../index.html";
 });

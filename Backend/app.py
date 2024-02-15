@@ -12,6 +12,7 @@ from bson import ObjectId
 import json
 from flask_cors import CORS
 from datetime import timedelta
+import matplotlib.pyplot as plt
 
 from dotenv import load_dotenv
 import os
@@ -445,6 +446,46 @@ def filter_tasks_by_task_name():
         # Return an error response
         return jsonify({'error': 'An error occurred while filtering tasks by task name'}), 500
 
+
+
+@app.route('/api/tasks/pie-chart', methods=['GET'])
+@jwt_required()  # Require JWT token for this route
+def generate_task_status_pie_chart():
+    try:
+        current_user = get_jwt_identity()  # Get the identity (username) of the logged-in user
+        # Query the database to find tasks belonging to the current user
+        tasks = db.tasks.find({'user': current_user})
+
+        # Initialize counters for each status category
+        completed_count = 0
+        in_progress_count = 0
+        stuck_count = 0
+
+        # Count tasks in each status category
+        for task in tasks:
+            status = task.get('status')
+            if status == 'completed':
+                completed_count += 1
+            elif status == 'in_progress':
+                in_progress_count += 1
+            elif status == 'stuck':
+                stuck_count += 1
+
+        # Create a dictionary containing the counts
+        status_counts = {
+            'completed': completed_count,
+            'in_progress': in_progress_count,
+            'stuck': stuck_count
+        }
+
+        # Return status counts as JSON response
+        return jsonify(status_counts), 200
+
+    except Exception as e:
+        # Log the exception
+        print(f"An error occurred while generating task status pie chart: {e}")
+        # Return an error response
+        return jsonify({'error': 'An error occurred while generating task status pie chart'}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -386,8 +386,8 @@ margin-top: -15px;
     border-collapse: collapse;
     width: 100%;
     margin-bottom: 10px;
-
-  }
+    color: black;
+ }
   
   th,
   td {
@@ -435,6 +435,34 @@ margin-top: -15px;
     padding: 5px 15px;
     /* padding-right: 35px; */
   }
+  .markcomplete {
+    width: 100%;
+    background-color: #01c875;
+    padding:2%;
+    font-weight: bold;
+    /* color: white; */
+    border: none;
+    border-radius: 7%;
+}
+.deletetask{
+    width: 100%;
+    background-color: red;
+    padding: 2%;
+    font-weight: bold;
+    /* color: white; */
+    border: none;
+    border-radius: 7%;
+}
+.updatetask{
+    width: 100%;
+    background-color:#0073ef; 
+    padding: 2%;
+    font-weight: bold;
+    /* color: white; */
+    border: none;
+    border-radius: 7%;
+
+}
   
   .tgreen {
     background-color: #4caf50;
@@ -450,6 +478,32 @@ margin-top: -15px;
     background-color: #f44336;
     text-align: center !important;
   }
+
+  /* Apply styles to the table container */
+#mainContainer {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+  
+  /* Apply styles to the table */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  /* Apply styles to table cells */
+  th, td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  /* Apply styles to the table header */
+  th {
+    background-color: #f2f2f2;
+    color: #333;
+  }
+  
 
   /* Table format end........ */
 
@@ -606,6 +660,38 @@ margin-top: -15px;
         gap: 20px;
         align-items: center;
     }
+
+    table {
+        border: 0;
+      }
+      table caption {
+        font-size: 1.3em;
+      }
+      thead {
+        display: none;
+      }
+      tr:nth-of-type(2n) {
+        background-color: #f2f2f2;
+      }
+      tr td:first-child {
+        background-color: #f2f2f2;
+        font-weight: bold;
+      }
+      tr td:first-child::before {
+        content: attr(data-th);
+        display: inline-block;
+        font-weight: bold;
+        width: 6rem;
+      }
+      td {
+        border-bottom: 1px solid #ddd;
+        display: block;
+        font-size: 0.8em;
+        text-align: right;
+      }
+      td:last-child {
+        border-bottom: 0;
+      }
   }
 
   

@@ -1,113 +1,107 @@
-//  add add add add
+document.getElementById('add').addEventListener('submit', function (event) {
+  event.preventDefault(); // Prevent default form submission
 
-let form1 = document.getElementById("add");
+  // Fetch form data
+  const board = document.getElementById('board').value.trim();
+  const task = document.getElementById('task').value.trim();
+  const person_allocated = document.getElementById('person_allocated').value.trim();
+  const p_email = document.getElementById('p_email').value.trim();
+  const status = document.getElementById('status').value.trim();
+  const start_date = document.getElementById('start_date').value.trim();
+  const end_date = document.getElementById('end_date').value.trim();
+  const extra = document.getElementById('extra').value.trim();
 
-form1.addEventListener("submit", (e) => {
-  e.preventDefault();
-  let payload = {
-    board: document.getElementById("board").value,
-    task: document.getElementById("task").value,
-    person_allocated: document.getElementById("person_allocated").value,
-    p_email: document.getElementById("p_email").value,
-    status: document.getElementById("status").value,
-    start_date: document.getElementById("start_date").value,
-    end_date: document.getElementById("end_date").value,
-    extra: document.getElementById("extra").value,
+  // Validate form fields
+  if (!board || !task || !person_allocated || !p_email || !status || !start_date || !end_date) {
+    alert('All form fields are required'); // Show an alert message if any field is empty
+    return; // Exit the function
+  }
+
+  // Prepare form data
+  const formData = {
+    board,
+    task,
+    person_allocated,
+    p_email,
+    status,
+    start_date,
+    end_date,
+    extra
   };
 
-  fetch("https://zany-lime-swordfish-cuff.cyclic.app/tasks/add", {
-    method: "POST",
+  // Send POST request to backend
+  fetch('http://localhost:5000/api/tasks', {
+    method: 'POST',
     headers: {
-      "content-type": "application/json",
-      Authorization: localStorage.getItem("token"),
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + localStorage.getItem('accessToken') // Include JWT token
     },
-    body: JSON.stringify(payload),
+    body: JSON.stringify(formData) // Convert form data to JSON
   })
-    .then((res) => res.json())
-    .then((res) => {
-      console.log(res);
-      alert("New task is added");
-      getData();
-    })
-    .catch((err) => console.log(err));
-});
+    .then(response => {
 
-//  get get get get
+      console.log("res", response)
+      if (!response.ok) {
+        throw new Error('Error creating task');
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log('Task created successfully:', data);
+      alert(data.message); // Show a success message
+      document.getElementById('add').reset(); // Reset the form after successful submission
+      fetchTasks()
+    })
+    .catch(error => {
+      console.error('Error:', error.message);
+    });
+});
 
 let container = document.getElementById("maincontainer");
 
-let getData = () => {
-  fetch("https://zany-lime-swordfish-cuff.cyclic.app/tasks", {
+//  get get get get
+let arr;
+function fetchTasks() {
+  fetch('http://localhost:5000/api/tasks', {
+    method:'GET',
     headers: {
-      Authorization: localStorage.getItem("token"),
-    },
+      'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
+    }
   })
-    .then((res) => res.json())
-    .then((res) => {
-      console.log(res);
-      let arr = res.tasks;
-      let disp = displayDatatab(arr);
-      container.innerHTML = disp;
-      updateUser();
-      deleteUser();
+    .then(response => response.json())
+    .then(data => {
+      // Call function to display tasks
+      arr = data.tasks;
+      // console.log("gii")
+      console.log(arr)
+      // let disp = displayTasks(arr);
+      displayTasks(arr);
+      // container.innerHTML = disp
+
+      // arr.forEach(task => {
+      //   console.log("Board:", task.board);
+      //   console.log("Task:", task.task);
+      //   console.log("Person Allocated:", task.person_allocated);
+      //   console.log("Email:", task.p_email);
+      //   console.log("Status:", task.status);
+      //   console.log("Start Date:", task.start_date);
+      //   console.log("End Date:", task.end_date);
+      //   console.log("Extra:", task.extra);
+      //   console.log("_id:", task._id);
+      //   console.log("--------------------");
+      // });
+      
     })
-    .catch((err) => console.log(err));
-};
-getData();
+    .catch(error => {
+      console.error('Error:', error.message);
+    });
 
-// function displayData(data) {
-//   data.sort((a, b) => {
-//     const order = ["stuck", "in_progress", "completed"];
-//     return order.indexOf(a.status) - order.indexOf(b.status);
-//   });
+    // Assuming tasksArray is the array you received as a response
 
-//   let ans = data.map((el, i) => {
-//     let startDate = new Date(el.start_date).toLocaleDateString();
-//     let endDate = new Date(el.end_date).toLocaleDateString();
-//     let cardClass = "";
-//     let statusDivClass = "";
-//     switch (el.status) {
-//       case "completed":
-//         cardClass = "kgreen";
-//         statusDivClass = "statusdiv-green";
-//         break;
-//       case "stuck":
-//         cardClass = "kred";
-//         statusDivClass = "statusdiv-red";
-//         break;
-//       case "in_progress":
-//         cardClass = "kyellow";
-//         statusDivClass = "statusdiv-yellow";
-//         break;
-//     }
-//     return `<div class="card ${cardClass}">
-//                     <div id="statusdiv" class="${statusDivClass}">
-//                       <p id = "statid">${el.status}</p>
-//                     </div>
-//                     <h4> Board name: ${el.board}</h4>
-//                     <p> Task name: ${el.task}</p>
-//                     <p> Person: ${el.person_allocated}</p>
-//                     <p> P Email: ${el.p_email}</p>
-//                     <p> Start date: ${startDate}</p>
-//                     <p> End date: ${endDate}</p>
-//                     <p> comments: ${el.extra}</p>
-//                     <div class="card-btn">
-//                         <button class="updatebtn" data-id=${el._id}> Update</button>
-//                         <button class="deletebtn" data-id=${el._id}> Delete</button>
-//                     </div>
-//                 </div>`;
-//   });
-//   return ans.join(" ");
-// }
+}
+fetchTasks();
 
-// table format.......................//
-
-function displayDatatab(data) {
-  // data.sort((a, b) => {
-  //   const order = ["stuck", "in_progress", "completed"];
-  //   return order.indexOf(a.status) - order.indexOf(b.status);
-  // });
-
+function displayTasks(data) {
   let tableRows = data.map((el, i) => {
     let startDate = new Date(el.start_date).toLocaleDateString();
     let endDate = new Date(el.end_date).toLocaleDateString();
@@ -133,349 +127,478 @@ function displayDatatab(data) {
                 <td class="${statusClass}">${el.status}</td>
                 <td>${el.extra}</td>
                 <td>
-                  <button class="updatebtn" data-id=${el._id}>Update</button>
-                  <button class="deletebtn" data-id=${el._id}>Delete</button>
+                <button class="markcomplete" data-task-id="${el._id}">Complete</button>
+                <button class="deletetask" data-task-id="${el._id}">Delete</button>
+                <button class="updatetask" data-task-id="${el._id}">Update</button>
                 </td>
               </tr>`;
   });
 
-  return `<table>
-              <thead>
-                <tr>
-                  <th>Board</th>
-                  <th>Task</th>
-                  <th>Person</th>
-                  <th>P Email</th>
-                  <th>Start date</th>
-                  <th>End date</th>
-                  <th>Status</th>
-                  <th>Comments</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${tableRows.join("")}
-              </tbody>
-            </table>`;
+  let tableHTML = `<table>
+                    <thead>
+                      <tr>
+                        <th>Board</th>
+                        <th>Task</th>
+                        <th>Person</th>
+                        <th>P Email</th>
+                        <th>Start date</th>
+                        <th>End date</th>
+                        <th>Status</th>
+                        <th>Comments</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${tableRows.join("")}
+                    </tbody>
+                  </table>`;
+
+  // Select the main container element and append the table HTML
+  container.innerHTML = tableHTML;
+  setupEventListeners()
 }
 
-// table format end-------------------//
 
-// get-perticular update - update update
+function setupEventListeners() {
+  document.querySelectorAll('.markcomplete').forEach(button => {
+    button.removeEventListener('click', markCompleteHandler); // Remove any existing event listeners to prevent duplicates
+    button.addEventListener('click', markCompleteHandler);
+  });
 
-function updateUser() {
-  let cardBtn = document.querySelectorAll(".updatebtn");
-  for (let btn of cardBtn) {
-    btn.addEventListener("click", function (e) {
-      e.preventDefault();
-      let id = e.target.dataset.id;
-      fetch(`https://zany-lime-swordfish-cuff.cyclic.app/tasks/${id}`, {
-        headers: {
-          Authorization: localStorage.getItem("token"),
-        },
-      })
-        .then((res) => res.json())
-        .then((res) => {
-          console.log(res);
-          document.getElementById("up_board").value = res[0].board;
-          document.getElementById("up_task").value = res[0].task;
-          document.getElementById("up_person_allocated").value =
-            res[0].person_allocated;
-          document.getElementById("up_p_email").value = res[0].p_email;
-          document.getElementById("up_status").value = res[0].status;
-          document.getElementById("up_start_date").value = res[0].start_date;
-          document.getElementById("up_end_date").value = res[0].end_date;
-          document.getElementById("up_extra").value = res[0].extra;
-          idt = document.getElementById("idt");
-          idt.textContent = res[0]._id;
-        })
-        .catch((err) => console.log(err));
+  document.querySelectorAll('.deletetask').forEach(button => {
+    button.removeEventListener('click', deleteTaskHandler); // Remove any existing event listeners to prevent duplicates
+    button.addEventListener('click', deleteTaskHandler);
+  });
+
+  document.querySelectorAll('.updatetask').forEach(button => {
+    button.removeEventListener('click', updateTaskHandler); // Remove any existing event listeners to prevent duplicates
+    button.addEventListener('click', updateTaskHandler);
+  });
+}
+
+function markCompleteHandler() {
+  const taskId = this.getAttribute('data-task-id');
+  markTaskAsCompleted(taskId)
+    .then(() => fetchTasks())
+    .catch(error => console.error('An error occurred:', error));
+}
+
+function deleteTaskHandler() {
+  const taskId = this.getAttribute('data-task-id');
+  deleteTask(taskId)
+    .then(() => fetchTasks())
+    .catch(error => console.error('An error occurred:', error));
+}
+
+let update_form = document.getElementById("update")
+update_form.style.display = "none"
+
+
+function updateTaskHandler(event) {
+  event.preventDefault();
+
+  console.log("butoon click")
+  update_form.style.display = "block"
+
+  const taskId = this.getAttribute('data-task-id');
+  console.log("xx", taskId)// Get the task ID from the button's dataset
+
+  document.getElementById("update").addEventListener('submit', async function (event) {
+    event.preventDefault()
+    const updatedTaskData = {
+      board: document.getElementById('up_board').value,
+      task: document.getElementById('up_task').value,
+      person_allocated: document.getElementById('up_person_allocated').value,
+      p_email: document.getElementById('up_p_email').value,
+      status: document.getElementById('up_status').value,
+      start_date: document.getElementById('up_start_date').value,
+      end_date: document.getElementById('up_end_date').value,
+      extra: document.getElementById('up_extra').value
+    };
+    if (!updatedTaskData.board || !updatedTaskData.task || !updatedTaskData.person_allocated || !updatedTaskData.p_email || !updatedTaskData.status || !updatedTaskData.start_date || !updatedTaskData.end_date || !updatedTaskData.extra) {
+      alert("All fills are required to fill")
+      return;
+    }
+
+    // console.log("data get after sum",updatedTaskData)
+    try {
+      const updatedTask = await updateTask(taskId, updatedTaskData);
+      console.log('Task updated successfully:', updatedTask);
+      fetchTasks()
+    } catch (error) {
+      console.error('Failed to update task:', error);
+    }
+
+  })
+
+
+
+
+}
+
+
+
+
+
+
+
+async function markTaskAsCompleted(taskId) {
+  try {
+    const response = await fetch(`http://localhost:5000/api/tasks/${taskId}/complete`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      }
     });
+    if (response.ok) {
+      const data = await response.json();
+      console.log(data.message); // You can handle success message here
+    } else {
+      throw new Error('Failed to mark task as completed');
+    }
+  } catch (error) {
+    console.error('An error occurred:', error);
+    throw error; // Rethrow the error to be caught by the caller
   }
 }
 
-// Real Update update
+async function deleteTask(taskId) {
+  try {
+    const response = await fetch(`http://localhost:5000/api/tasks/${taskId}`, {
+      method: 'DELETE'
+    });
 
-let form2 = document.getElementById("update");
+    // console.log("del", taskId)
+    if (response.ok) {
+      const data = await response.json();
+      console.log("res", data)
 
-form2.addEventListener("submit", (e) => {
-  e.preventDefault();
-  updatefn();
+      fetchTasks()
+
+    }
+  } catch (error) {
+    console.error('An error occurred:', error);
+    throw error; // Rethrow the error to be caught by the caller
+  }
+}
+
+// Function to update a task
+async function updateTask(taskId, updatedData) {
+  try {
+    const response = await fetch(`http://localhost:5000/api/tasks/${taskId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(updatedData)
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update task');
+    }
+
+    const result = await response.json();
+    return result.task; // Return the updated task object
+  } catch (error) {
+    console.error('Error updating task:', error.message);
+    throw error;
+  }
+}
+
+setupEventListeners();
+
+
+// Assuming tasksArray is the array you received as a response
+
+// document.getElementById('sortBystatus').addEventListener('change', function() {
+//   const sortBy = this.value;
+//   console.log(sortBy);
+
+//   let sortedTasks = arr.slice(); // Copy the original array to sortedTasks
+
+//   if (sortBy === 'lowToHigh') {
+//       sortedTasks.sort((a, b) => {
+//           // Sort tasks from "Stuck" to "Completed"
+//           const order = ["stuck", "in_progress", "completed"];
+//           return order.indexOf(a.status) - order.indexOf(b.status);
+//       });
+//   } else if (sortBy === 'HighToLow') {
+//       sortedTasks.sort((a, b) => {
+//           // Sort tasks from "Completed" to "Stuck"
+//           const order = ["stuck", "in_progress", "completed"];
+//           return order.indexOf(b.status) - order.indexOf(a.status);
+//       });
+//   }
+
+//   // Call a function to display the sorted tasks
+//   displayTasks(sortedTasks);
+//   console.log("sortedTasks", sortedTasks);
+// });
+
+
+
+
+
+
+
+
+// Function to sort tasks by start date
+
+document.getElementById('sortByStartdate').addEventListener('change', function() {
+  const sortOption = this.value; // Get the selected value from the dropdown
+  console.log("sort", sortOption)
+  sortTasksByStartDate(sortOption); // Call the sorting function with the selected option
 });
-function updatefn() {
-  let newPayload = {
-    board: document.getElementById("up_board").value,
-    task: document.getElementById("up_task").value,
-    person_allocated: document.getElementById("up_person_allocated").value,
-    p_email: document.getElementById("up_p_email").value,
-    status: document.getElementById("up_status").value,
-    start_date: document.getElementById("up_start_date").value,
-    end_date: document.getElementById("up_end_date").value,
-    extra: document.getElementById("up_extra").value,
+
+function sortTasksByStartDate(sortOption) {
+  console.log("hi")
+  console.log(sortOption)
+
+  let headers = {
+      'Content-Type': 'application/json'
   };
-  let idt = document.getElementById("idt").innerText;
-  fetch(`https://zany-lime-swordfish-cuff.cyclic.app/tasks/update/${idt}`, {
-    method: "PATCH",
-    headers: {
-      "content-type": "application/json",
-      Authorization: localStorage.getItem("token"),
-    },
-    body: JSON.stringify(newPayload),
-  })
-    .then((res) => res.json())
-    .then((res) => {
-      console.log(res);
-      console.log(idt);
-      alert("Task is updated");
-      getData();
-    })
-    .catch((err) => console.log(err));
-}
-// delete delete delete delete
 
-function deleteUser() {
-  let cardBtnn = document.querySelectorAll(".deletebtn");
-  for (let btn of cardBtnn) {
-    btn.addEventListener("click", function (e) {
-      e.preventDefault();
-      let id = e.target.dataset.id;
-      fetch(`https://zany-lime-swordfish-cuff.cyclic.app/tasks/delete/${id}`, {
-        method: "delete",
-        headers: {
-          Authorization: localStorage.getItem("token"),
-        },
-      })
-        .then((res) => res.json())
-        .then((res) => {
-          alert("Task is deleted");
-          getData();
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    });
+  const accessToken = localStorage.getItem('accessToken');
+  if (accessToken) {
+      headers['Authorization'] = 'Bearer ' + accessToken;
   }
+
+  fetch(`http://localhost:5000/api/tasks/sort?sortByStartdate=${sortOption}`, {
+      method: 'GET',
+      headers: headers
+  })
+  .then(response => {
+      if (!response.ok) {
+          throw new Error('Failed to fetch tasks');
+      }
+      return response.json();
+  })
+  .then(data => {
+      console.log("data", data)
+      // Check if tasks data is available in the response
+      if (data && data.tasks && data.tasks.length > 0) {
+          console.log("Data found in response");
+          // Call a function to display the sorted tasks on the frontend
+          displayTasks(data.tasks);
+      } else {
+          console.error('No tasks data found in response');
+          // Handle case where no tasks data is found
+      }
+  })
+  .catch(error => {
+      console.error('Error sorting tasks:', error);
+      // Handle error
+  });
 }
 
-let Kanban = document.getElementById("kanban");
 
-Kanban.addEventListener("click", () => {
-  window.location.href = "../pages/wk_task.html";
+document.getElementById('filterByStatus').addEventListener('change', function() {
+  const selectedStatus = this.value;
+  filterTasksByStatus(selectedStatus);
 });
 
-// filter by board -------------------//
 
-let formA = document.getElementById("filterByBoard");
+function filterTasksByStatus(status) {
+  // Prepare headers
+  let headers = {
+    'Content-Type': 'application/json'
+  };
 
-formA.addEventListener("submit", (e) => {
-  e.preventDefault();
+  // Add authorization header if access token is available
+  const accessToken = localStorage.getItem('accessToken');
+  if (accessToken) {
+    headers['Authorization'] = 'Bearer ' + accessToken;
+  }
 
-  let fboard = document.getElementById("filterBoard").value;
-
-  fetch(`https://zany-lime-swordfish-cuff.cyclic.app/tasks?board=${fboard}`, {
-    headers: {
-      Authorization: localStorage.getItem("token"),
-    },
+  // Make a fetch request to the filter endpoint
+  fetch(`http://localhost:5000/api/tasks/filter?status=${status}`, {
+    method: 'GET',
+    headers: headers
   })
-    .then((res) => res.json())
-    .then((res) => {
-      console.log(res);
-      let arr = res.tasks;
-      let disp = displayDatatab(arr);
-      container.innerHTML = disp;
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-});
-
-//filter by person's name----------------------//
-
-let formB = document.getElementById("filterByName");
-
-formB.addEventListener("submit", (e) => {
-  e.preventDefault();
-
-  let fname = document.getElementById("filtername").value;
-
-  fetch(
-    `https://zany-lime-swordfish-cuff.cyclic.app/tasks?person_allocated=${fname}`,
-    {
-      headers: {
-        Authorization: localStorage.getItem("token"),
-      },
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Failed to fetch tasks');
     }
-  )
-    .then((res) => res.json())
-    .then((res) => {
-      console.log(res);
-      let arr = res.tasks;
-      let disp = displayDatatab(arr);
-      container.innerHTML = disp;
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+    return response.json();
+  })
+  .then(data => {
+    // Check if tasks data is available in the response
+    if (data && data.tasks) {
+      // Call a function to display the filtered tasks on the frontend
+      displayTasks(data.tasks);
+    } else {
+      console.error('No tasks data found in response');
+    }
+  })
+  .catch(error => {
+    console.error('Error filtering tasks:', error);
+    // Handle error
+  });
+}
+
+
+document.getElementById('searchany').addEventListener('submit', function(event) {
+  event.preventDefault(); // Prevent the default form submission behavior
+  const searchInput = document.getElementById('search').value; // Get the value from the search input
+  filterTasksByTaskName(searchInput);
+  document.getElementById('search').value = ''; // Call the filtering function with the search input
 });
 
-// filter by status--------------//
+// Function to handle filter by name form submission
+document.getElementById('filterByName').addEventListener('submit', function(event) {
+  event.preventDefault(); // Prevent the default form submission behavior
+  const personName = document.getElementById('filtername').value; // Get the person's name from the input field
+  filterTasksByPersonName(personName); 
+  document.getElementById('filtername').value = '';// Call the function to filter tasks by person's name
+});
 
-let filterByStatus = document.getElementById("filterByStatus");
-
-filterByStatus.addEventListener("change", () => {
-  let filterByStatusV = filterByStatus.value;
-  if (filterByStatusV == "") {
-    getData();
+// Function to handle search form submission
+document.getElementById('filterByBoard').addEventListener('submit', function(event) {
+  event.preventDefault(); // Prevent the form from submitting normally
+  
+  const boardName = document.getElementById('filterBoard').value.trim();
+  console.log(boardName)
+  if (boardName !== '') {
+      filterTasksByBoard(boardName);
+      document.getElementById('filterBoard').value = '';
+      
   } else {
-    fetch(
-      `https://zany-lime-swordfish-cuff.cyclic.app/tasks?status=${filterByStatusV}`,
-      {
-        headers: {
-          Authorization: localStorage.getItem("token"),
-        },
-      }
-    )
-      .then((res) => res.json())
-      .then((res) => {
-        console.log(res);
-        let arr = res.tasks;
-        let disp = displayDatatab(arr);
-        container.innerHTML = disp;
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    alert("OOPs fill the form")  // Display an error message or handle empty input as needed
   }
 });
 
-// search by any thing ---------------------------//
 
-let formC = document.getElementById("searchany");
-formC.addEventListener("submit", (e) => {
-  e.preventDefault();
-  let fsearch = document.getElementById("search").value;
-  fetch(
-    `https://zany-lime-swordfish-cuff.cyclic.app/tasks?search=${fsearch}&fields=person_allocated,board,task,p_email`,
-    {
+// Function to filter tasks by board name
+function filterTasksByBoard(boardName) {
+  // Make an API request to filter tasks by board name
+  fetch(`http://localhost:5000/api/tasks/filter-by-board?boardName=${boardName}`, {
+      method: 'GET',
       headers: {
-        Authorization: localStorage.getItem("token"),
-      },
+          'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
+      }
+  })
+  .then(response => {
+      if (!response.ok) {
+          throw new Error('Failed to filter tasks by board');
+      }
+      return response.json();
+  })
+  .then(data => {
+      displayTasks(data.tasks); // Call a function to display the filtered tasks
+  })
+  .catch(error => {
+      console.error('Error filtering tasks by board:', error);
+      // Handle error
+  });
+}
+
+// Function to filter tasks by person's name/
+function filterTasksByPersonName(personName) {
+  console.log(personName)
+  fetch(`http://localhost:5000/api/tasks/filter-by-name?personName=${personName}`, {
+    method: 'GET',
+    headers: {
+      'Authorization': 'Bearer ' + localStorage.getItem('accessToken'),
+      'Content-Type': 'application/json'
     }
-  )
-    .then((res) => res.json())
-    .then((res) => {
-      console.log(res);
-      let arr = res.tasks;
-      let disp = displayDatatab(arr);
-      container.innerHTML = disp;
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-});
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Failed to filter tasks by person name');
+    }
+    return response.json();
+  })
+  .then(data => {
+    displayTasks(data.tasks); // Call a function to display the filtered tasks
+  })
+  .catch(error => {
+    console.error('Error filtering tasks by person name:', error);
+    // Handle error
+  });
+}
 
-// sort by status----------------------------//
 
-let sortByStatus = document.getElementById("sortBystatus");
-
-sortByStatus.addEventListener("change", () => {
-  let sortByStatusValue = sortByStatus.value;
-  if (sortByStatusValue == "") {
-    getData();
-  } else if (sortByStatusValue == "lowToHigh") {
-    let containersortSts = document.getElementById("maincontainer");
-
-    fetch("https://zany-lime-swordfish-cuff.cyclic.app/tasks", {
+function filterTasksByTaskName(taskName) {
+  // Make an API request to filter tasks by task name
+  fetch(`http://localhost:5000/api/tasks/search?taskName=${taskName}`, {
+      method: 'GET',
       headers: {
-        Authorization: localStorage.getItem("token"),
-      },
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        console.log(res);
-        let arr = res.tasks;
-        arr.sort((a, b) => {
-          const order = ["stuck", "in_progress", "completed"];
-          return order.indexOf(a.status) - order.indexOf(b.status);
-        });
-        let disp = displayDatatab(arr);
-        containersortSts.innerHTML = disp;
-      })
-      .catch((err) => console.log(err));
-  } else if (sortByStatusValue == "HighToLow") {
-    let containersortSts = document.getElementById("maincontainer");
-
-    fetch("https://zany-lime-swordfish-cuff.cyclic.app/tasks", {
-      headers: {
-        Authorization: localStorage.getItem("token"),
-      },
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        console.log(res);
-        let arr = res.tasks;
-        arr.sort((a, b) => {
-          const order = ["completed", "in_progress", "stuck"];
-          return order.indexOf(a.status) - order.indexOf(b.status);
-        });
-        let disp = displayDatatab(arr);
-        containersortSts.innerHTML = disp;
-      })
-      .catch((err) => console.log(err));
-  }
-});
-
-// sort by start date-------------------------//
-
-let sortByStartdate = document.getElementById("sortByStartdate");
-
-sortByStartdate.addEventListener("change", () => {
-  let sortByStartdateV = sortByStartdate.value;
-
-  if (sortByStartdateV == "") {
-    getData();
-  } else if (sortByStartdateV == "lowToHighSD") {
-    fetch(
-      `https://zany-lime-swordfish-cuff.cyclic.app/tasks?sortbyasc=start_date`,
-      {
-        headers: {
-          Authorization: localStorage.getItem("token"),
-        },
+          'Authorization': 'Bearer ' + localStorage.getItem('accessToken'),
+          'Content-Type': 'application/json'
       }
-    )
-      .then((res) => res.json())
-      .then((res) => {
-        console.log(res);
-        let arr = res.tasks;
-        let disp = displayDatatab(arr);
-        container.innerHTML = disp;
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  } else if (sortByStartdateV == "HighToLowSD") {
-    fetch(
-      `https://zany-lime-swordfish-cuff.cyclic.app/tasks?sortbydesc=start_date`,
-      {
-        headers: {
-          Authorization: localStorage.getItem("token"),
-        },
+  })
+  .then(response => {
+      if (!response.ok) {
+          throw new Error('Failed to filter tasks by task name');
       }
-    )
-      .then((res) => res.json())
-      .then((res) => {
-        console.log(res);
-        let arr = res.tasks;
-        let disp = displayDatatab(arr);
-        container.innerHTML = disp;
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
-});
+      return response.json();
+  })
+  .then(data => {
+      displayTasks(data.tasks); // Call a function to display the filtered tasks
+  })
+  .catch(error => {
+      console.error('Error filtering tasks by task name:', error);
+      // Handle error
+  });
+}
 
-// all functionalities done---------------------------------------//
+
+
+
+// // sort by status----------------------------//
+
+// let sortByStatus = document.getElementById("sortBystatus");
+
+// sortByStatus.addEventListener("change", () => {
+//   let sortByStatusValue = sortByStatus.value;
+//   if (sortByStatusValue == "") {
+//     getData();
+//   } else if (sortByStatusValue == "lowToHigh") {
+//     let containersortSts = document.getElementById("maincontainer");
+
+//     fetch("https://zany-lime-swordfish-cuff.cyclic.app/tasks", {
+//       headers: {
+//         Authorization: localStorage.getItem("token"),
+//       },
+//     })
+//       .then((res) => res.json())
+//       .then((res) => {
+//         console.log(res);
+//         let arr = res.tasks;
+//         arr.sort((a, b) => {
+//           const order = ["stuck", "in_progress", "completed"];
+//           return order.indexOf(a.status) - order.indexOf(b.status);
+//         });
+//         let disp = displayData(arr);
+//         containersortSts.innerHTML = disp;
+//       })
+//       .catch((err) => console.log(err));
+//   } else if (sortByStatusValue == "HighToLow") {
+//     let containersortSts = document.getElementById("maincontainer");
+
+//     fetch("https://zany-lime-swordfish-cuff.cyclic.app/tasks", {
+//       headers: {
+//         Authorization: localStorage.getItem("token"),
+//       },
+//     })
+//       .then((res) => res.json())
+//       .then((res) => {
+//         console.log(res);
+//         let arr = res.tasks;
+//         arr.sort((a, b) => {
+//           const order = ["completed", "in_progress", "stuck"];
+//           return order.indexOf(a.status) - order.indexOf(b.status);
+//         });
+//         let disp = displayData(arr);
+//         containersortSts.innerHTML = disp;
+//       })
+//       .catch((err) => console.log(err));
+//   }
+// });
+
+
+
+// // all functionalities done---------------------------------------//
 
 // redirect to chart page-----------//
 
@@ -502,8 +625,8 @@ hmpgredirect.addEventListener("click", () => {
 let logout = document.getElementById("logout");
 
 logout.addEventListener("click", () => {
-  localStorage.removeItem("token");
-  localStorage.removeItem("email");
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("mapiuser");
   alert("Logout Successful");
   window.location.href = "../index.html";
 });
