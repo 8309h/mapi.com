@@ -7,9 +7,11 @@ from flask_jwt_extended import (
     create_access_token,
     get_jwt_identity,
 )
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from bson import ObjectId
 import json
 from flask_cors import CORS
+from datetime import timedelta
 
 from dotenv import load_dotenv
 import os
@@ -22,8 +24,7 @@ database_url = os.getenv("DATABASE_URL")
 secrete_key = os.getenv("SECRET_KEY")
 
 app = Flask(__name__)
-# CORS(app)
-CORS(app, origins='http://127.0.0.1:5500')
+CORS(app)
 
 # Configure Flask-JWT-Extended
 app.config["JWT_SECRET_KEY"] = secrete_key  # Change this to a secure secret key
@@ -79,8 +80,11 @@ def login_user():
 
     # Check if the user exists and the password is correct
     if user and check_password_hash(user["password"], password):
-        # Generate JWT token
-        access_token = create_access_token(identity=email)
+       # Set expiry time to 1 hour (3600 seconds)
+        expires_in = timedelta(hours=5)
+
+# Create access token with custom expiry time
+        access_token = create_access_token(identity=email, expires_delta=expires_in)
 
         # Include user data and access token in the response
         response_data = {
@@ -111,9 +115,7 @@ def create_task():
             "board": data["board"],
             "task": data["task"],
             "person_allocated": data["person_allocated"],
-            "p_email": data.get(
-                "p_email"
-            ),  # Optional field, use get to handle cases where it's not provided
+            "p_email": data.get("p_email"),  
             "status": data.get("status"),  # Optional field
             "start_date": data.get("start_date"),  # Optional field
             "end_date": data.get("end_date"),  # Optional field
@@ -149,10 +151,31 @@ def get_tasks():
         current_user = get_jwt_identity()  # Get the identity (username) of the logged-in user
         # Query the database to find tasks belonging to the current user
         tasks = db.tasks.find({'user': current_user})
-        # Convert tasks cursor to a list of dictionaries
-        tasks_list = list(tasks)
+
+        # Initialize an empty list to store tasks
+        tasks_list = []
+
+        # Iterate through tasks and convert to dictionary format
+        for task in tasks:
+            # Check if the 'board' field exists in the task
+            if 'board' in task:
+                task_dict = {
+                   '_id': str(task['_id']),
+                    'board': task['board'],
+                    'task': task['task'],
+                    'person_allocated': task['person_allocated'],
+                    'p_email': task.get('p_email'),
+                    'status': task.get('status'),
+                    'start_date': task.get('start_date'),
+                    'end_date': task.get('end_date'),
+                    'extra': task.get('extra'),
+                    
+                }
+                tasks_list.append(task_dict)
+
         # Return tasks as JSON response
         return jsonify({'tasks': tasks_list}), 200
+
     except Exception as e:
         # Log the exception
         print(f"An error occurred while retrieving tasks: {e}")
@@ -160,8 +183,8 @@ def get_tasks():
         return jsonify({'error': 'An error occurred while retrieving tasks'}), 500
 
 # Update Task
-@app.route("/api/tasks/<task_id>", methods=["PUT"])
-def update_task(task_id):
+@app.route("/api/tasks/<_id>", methods=["PUT"])
+def update_task(_id):
     try:
         data = request.json
         updated_task = {
@@ -175,29 +198,30 @@ def update_task(task_id):
             "extra": data.get("extra"),
             # Add more fields as needed
         }
-        db.tasks.update_one({"_id": ObjectId(task_id)}, {"$set": updated_task})
+        db.tasks.update_one({"_id": ObjectId(_id)}, {"$set": updated_task})
         return jsonify({"task": updated_task, "message": "Task updated successfully"})
     except Exception as e:
         print(f"An error occurred while updating task: {e}")
         return jsonify({"error": "An error occurred while updating task"}), 500
 
-
-# Delete Task
-@app.route("/api/tasks/<task_id>", methods=["DELETE"])
-def delete_task(task_id):
+#delete
+@app.route("/api/tasks/<_id>", methods=["DELETE"])
+def delete_task(_id):
     try:
-        db.tasks.delete_one({"_id": ObjectId(task_id)})
+        # Convert task_id to ObjectId
+        task_object_id = ObjectId(_id)
+        # Use the converted ObjectId to delete the task
+        db.tasks.delete_one({"_id": task_object_id})
         return jsonify({"message": "Task deleted successfully"})
     except Exception as e:
         print(f"An error occurred while deleting task: {e}")
         return jsonify({"error": "An error occurred while deleting task"}), 500
 
-
 # Mark Task as Completed
-@app.route("/api/tasks/<task_id>/complete", methods=["PUT"])
-def mark_task_as_completed(task_id):
+@app.route("/api/tasks/<_id>/complete", methods=["PUT"])
+def mark_task_as_completed(_id):
     try:
-        db.tasks.update_one({"_id": ObjectId(task_id)}, {"$set": {"completed": True}})
+        db.tasks.update_one({"_id": ObjectId(_id)}, {"$set": {"status": "completed"}})
         return jsonify({"message": "Task marked as completed"})
     except Exception as e:
         print(f"An error occurred while marking task as completed: {e}")
@@ -219,6 +243,207 @@ def find_task_by_name(task_name):
     except Exception as e:
         print(f"An error occurred while finding task: {e}")
         return jsonify({"error": "An error occurred while finding task"}), 500
+
+
+from flask import request
+
+@app.route('/api/tasks/sort', methods=['GET'])
+@jwt_required()  # Require JWT token for this route
+def sort_tasks_by_start_date():
+    try:
+        current_user = get_jwt_identity()  # Get the identity (username) of the logged-in user
+        # Query the database to find tasks belonging to the current user
+        tasks = db.tasks.find({'user': current_user})
+
+        # Initialize an empty list to store tasks
+        tasks_list = []
+
+        # Iterate through tasks and convert to dictionary format
+        for task in tasks:
+            # Check if the 'board' field exists in the task
+            if 'board' in task:
+                task_dict = {
+                    '_id': str(task['_id']),
+                    'board': task['board'],
+                    'task': task['task'],
+                    'person_allocated': task['person_allocated'],
+                    'p_email': task.get('p_email'),
+                    'status': task.get('status'),
+                    'start_date': task.get('start_date'),
+                    'end_date': task.get('end_date'),
+                    'extra': task.get('extra'),
+                }
+                tasks_list.append(task_dict)
+
+        # Sort tasks based on start date if sortByStartdate parameter is provided
+        sort_option = request.args.get('sortByStartdate')
+        if sort_option == 'lowToHighSD':
+            tasks_list.sort(key=lambda x: x.get('start_date', ''))  # Oldest to latest
+        elif sort_option == 'HighToLowSD':
+            tasks_list.sort(key=lambda x: x.get('start_date', ''), reverse=True)  # Latest to oldest
+
+        # Return tasks as JSON response
+        return jsonify({'tasks': tasks_list}), 200
+
+    except Exception as e:
+        # Log the exception
+        print(f"An error occurred while retrieving tasks: {e}")
+        # Return an error response
+        return jsonify({'error': 'An error occurred while retrieving tasks'}), 500
+
+
+@app.route('/api/tasks/filter', methods=['GET'])
+@jwt_required()  # Require JWT token for this route
+def filter_tasks_by_status():
+    try:
+        current_user = get_jwt_identity()  # Get the identity (username) of the logged-in user
+        status_filter = request.args.get('status')  # Get the status filter value from the request query parameters
+
+        # Query the database to find tasks belonging to the current user and matching the specified status
+        tasks = db.tasks.find({'user': current_user, 'status': status_filter})
+
+        # Initialize an empty list to store filtered tasks
+        filtered_tasks = []
+
+        # Iterate through tasks and convert to dictionary format
+        for task in tasks:
+            if 'board' in task:
+                task_dict = {
+                    '_id': str(task['_id']),
+                    'board': task['board'],
+                    'task': task['task'],
+                    'person_allocated': task['person_allocated'],
+                    'p_email': task.get('p_email'),
+                    'status': task.get('status'),
+                    'start_date': task.get('start_date'),
+                    'end_date': task.get('end_date'),
+                    'extra': task.get('extra'),
+                }
+                filtered_tasks.append(task_dict)
+
+        # Return filtered tasks as JSON response
+        return jsonify({'tasks': filtered_tasks}), 200
+
+    except Exception as e:
+        # Log the exception
+        print(f"An error occurred while filtering tasks: {e}")
+        # Return an error response
+        return jsonify({'error': 'An error occurred while filtering tasks'}), 500
+
+
+
+@app.route('/api/tasks/filter-by-board', methods=['GET'])
+@jwt_required()  # Require JWT token for this route
+def filter_tasks_by_board():
+    try:
+        current_user = get_jwt_identity()  # Get the identity (username) of the logged-in user
+        board_name = request.args.get('boardName')  # Get the board name from the query parameters
+        
+        # Query the database to find tasks belonging to the current user and matching the board name
+        tasks = db.tasks.find({'user': current_user, 'board': board_name})
+
+        # Initialize an empty list to store tasks
+        tasks_list = []
+
+        # Iterate through tasks and convert to dictionary format
+        for task in tasks:
+            task_dict = {
+                '_id': str(task['_id']),
+                'board': task['board'],
+                'task': task['task'],
+                'person_allocated': task['person_allocated'],
+                'p_email': task.get('p_email'),
+                'status': task.get('status'),
+                'start_date': task.get('start_date'),
+                'end_date': task.get('end_date'),
+                'extra': task.get('extra'),
+            }
+            tasks_list.append(task_dict)
+
+        # Return tasks as JSON response
+        return jsonify({'tasks': tasks_list}), 200
+
+    except Exception as e:
+        # Log the exception
+        print(f"An error occurred while filtering tasks by board: {e}")
+        # Return an error response
+        return jsonify({'error': 'An error occurred while filtering tasks by board'}), 500
+    
+    
+@app.route('/api/tasks/filter-by-name', methods=['GET'])
+@jwt_required()  # Require JWT token for this route
+def filter_tasks_by_personname():
+    try:
+        current_user = get_jwt_identity()  # Get the identity (username) of the logged-in user
+        person_name = request.args.get('personName')  # Get the board name from the query parameters
+        
+        # Query the database to find tasks belonging to the current user and matching the board name
+        tasks = db.tasks.find({'user': current_user, 'person_allocated': person_name})
+
+        # Initialize an empty list to store tasks
+        tasks_list = []
+
+        # Iterate through tasks and convert to dictionary format
+        for task in tasks:
+            task_dict = {
+                '_id': str(task['_id']),
+                'board': task['board'],
+                'task': task['task'],
+                'person_allocated': task['person_allocated'],
+                'p_email': task.get('p_email'),
+                'status': task.get('status'),
+                'start_date': task.get('start_date'),
+                'end_date': task.get('end_date'),
+                'extra': task.get('extra'),
+            }
+            tasks_list.append(task_dict)
+
+        # Return tasks as JSON response
+        return jsonify({'tasks': tasks_list}), 200
+
+    except Exception as e:
+        # Log the exception
+        print(f"An error occurred while filtering tasks by person name: {e}")
+        # Return an error response
+        return jsonify({'error': 'An error occurred while filtering tasks by board'}), 500
+    
+    
+@app.route('/api/tasks/search', methods=['GET'])
+@jwt_required()  # Require JWT token for this route
+def filter_tasks_by_task_name():
+    try:
+        current_user = get_jwt_identity()  # Get the identity (username) of the logged-in user
+        task_name = request.args.get('taskName')  # Get the task name from the query parameters
+        
+        # Query the database to find tasks belonging to the current user and matching the task name
+        tasks = db.tasks.find({'user': current_user, 'task': task_name})
+
+        # Initialize an empty list to store tasks
+        tasks_list = []
+
+        # Iterate through tasks and convert to dictionary format
+        for task in tasks:
+            task_dict = {
+                '_id': str(task['_id']),
+                'board': task['board'],
+                'task': task['task'],
+                'person_allocated': task['person_allocated'],
+                'p_email': task.get('p_email'),
+                'status': task.get('status'),
+                'start_date': task.get('start_date'),
+                'end_date': task.get('end_date'),
+                'extra': task.get('extra'),
+            }
+            tasks_list.append(task_dict)
+
+        # Return tasks as JSON response
+        return jsonify({'tasks': tasks_list}), 200
+
+    except Exception as e:
+        # Log the exception
+        print(f"An error occurred while filtering tasks by task name: {e}")
+        # Return an error response
+        return jsonify({'error': 'An error occurred while filtering tasks by task name'}), 500
 
 
 if __name__ == "__main__":

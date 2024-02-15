@@ -4,6 +4,31 @@ body{
     padding: 0px;
     color: #303636;
 }
+.markcomplete {
+    background-color: #01c875;
+    padding: 2%;
+    font-weight: bold;
+    color: white;
+    border: none;
+    border-radius: 7%;
+}
+.deletetask{
+    background-color: red;
+    padding: 2%;
+    font-weight: bold;
+    color: white;
+    border: none;
+    border-radius: 7%;
+}
+.updatetask{
+    background-color:#0073ef; 
+    padding: 2%;
+    font-weight: bold;
+    color: white;
+    border: none;
+    border-radius: 7%;
+
+}
 #fullpage{
     display: flex;
     align-items: start;
@@ -197,6 +222,14 @@ margin-top: -15px;
     border-width: 0px;
     color: white;
 }
+
+.task-card {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
 
 
 

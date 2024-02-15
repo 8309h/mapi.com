@@ -37,7 +37,7 @@
             </div>
         </div>
         <div id="addNup">
-            <form id="add">
+            <!-- <form id="add">
                 <h2>Add new Task</h2>
                 <input type="text" id="board" placeholder="Enter board name">
                 <input type="text" id="task" placeholder="Enter task name">
@@ -45,14 +45,36 @@
                 <input type="text" id="p_email" placeholder="Enter person's email">
                 <select id="status">
                     <option value="" disabled selected>Select status</option>
-                    <option value="completed">Completed</option>
+                    <option value="completed" style="background-color: aqua;">Completed</option>
                     <option value="in_progress">In Progress</option>
                     <option value="stuck">Stuck</option>
                 </select>
-                <label for="start_date" style="margin-bottom: 10px;">Start date:</label>
+                <p>Start date</p>
                 <input type="date" id="start_date">
-                <label for="end_date" style="margin-bottom: 10px;">End date:</label>
+                <p>End date</p>
                 <input type="date" id="end_date">
+                <input type="text" id="extra" placeholder="Any extra info or comments..">
+                <input type="submit" id="submit" value="Add">
+            </form> -->
+
+            <form id="add">
+                <h2>Add new Task</h2>
+                <input type="text" id="board" placeholder="Enter board name">
+                <input type="text" id="task" placeholder="Enter task name">
+                <input type="text" id="person_allocated" placeholder="Enter name of person">
+                <input type="text" id="p_email" placeholder="Enter person's email">
+                <select  id="status">
+                    <option class="ogray" value="">Status of task</option>
+                    <option class="ogreen" value="completed">Completed</option>
+                    <option class="oyellow" value="in_progress">In progress</option>
+                    <option class="ored" value="stuck">Stuck</option>
+                    <!-- <option class="ored" value="not_started">not_started</option> -->
+
+                </select>
+                <p>Start date</p>
+                <input type="date" id="start_date" placeholder="Enter start date">
+                <p>End date</p>
+                <input type="date" id="end_date" placeholder="Enter end date">
                 <input type="text" id="extra" placeholder="Any extra info or comments..">
                 <input type="submit" id="submit" value="Add">
             </form>
@@ -60,7 +82,8 @@
 
             <form id="update">
                 <h2>Update Task</h2>
-                <p id="idt" style="display: none;"></p>
+                
+                <p id="idt" style="display:block;"></p>
                 <input type="text" id="up_board" placeholder="Enter board name">
                 <input type="text" id="up_task" placeholder="Enter task name">
                 <input type="text" id="up_person_allocated" placeholder="Enter name of person">
@@ -99,8 +122,8 @@
                         </select>
                         <select class="topbtns1" id="sortByStartdate">
                             <option value="">Sort by Start Date</option>
-                            <option value="lowToHighSD">oldest to latest</option>
-                            <option value="HighToLowSD">latest to oldest</option>
+                            <option value="lowToHighSD">Oldest to Latest</option>
+                            <option value="HighToLowSD">Latest to Oldest</option>
                         </select>
 
                         <select class="topbtns1" id="filterByStatus">
