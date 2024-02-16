@@ -316,6 +316,7 @@ margin-top: -15px;
 /* Kanban start--------- */
 
 .card{
+    color: black;
     padding: 10px;
     padding-bottom: 20px;
     border-radius: 8px;
@@ -688,3 +689,6 @@ margin-top: -15px;
         align-items: center;
     }
   }
+
+
+  

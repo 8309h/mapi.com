@@ -1,6 +1,6 @@
-# Task Manager App
+# Welcome! To Mapi.com
 
-Welcome to Mapi.com ! This is a Flask-based web application designed to help users manage their tasks effectively.
+Welcome to Mapi.com! This is a Flask-based web application designed to help users manage their tasks effectively.
 
 ## Table of Contents
 
@@ -11,6 +11,7 @@ Welcome to Mapi.com ! This is a Flask-based web application designed to help use
 - [Technologies Used](#technologies-used)
 - [Contributing](#contributing)
 - [License](#license)
+- [Screenshots](#screenshots)
 
 ## Features
 
@@ -26,7 +27,7 @@ To run the Task Manager App locally, follow these steps:
 1. Clone the repository:
 
    ```bash
-   git clone <repository_url>
+   git clone https://github.com/8309h/mapi.com.git
    ```
 
 2. Install the required dependencies:
@@ -93,7 +94,7 @@ The Task Manager App provides the following API endpoints:
 
 ### Frontend
 
-- *Your frontend technologies here (e.g., HTML, CSS, JavaScript, React, Vue.js)*
+- *Your frontend technologies here (e.g., HTML, CSS, JavaScript, chart.js,)*
 
 ## Contributing
 
@@ -102,4 +103,39 @@ Contributions are welcome! Feel free to open an issue or submit a pull request f
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
+
+
+## Screenshots
+
+### Mapi.com Dashboard
+
+![Task Manager Dashboard](./Frontend/opscreen/screencapture-127-0-0-1-5500-Frontend-index-html-2024-02-16-14_47_04.png)
+
+### Register Page
+
+![Task Creation Page](./Frontend/opscreen/screencapture-127-0-0-1-5500-Frontend-pages-register-html-2024-02-16-15_06_49.png)
+
+### Login Page
+
+![Task Details Page](./Frontend/opscreen/screencapture-127-0-0-1-5500-Frontend-pages-login-html-2024-02-16-15_20_51.png)
+
+### Work Management Page
+
+![Task Creation Page](./Frontend/opscreen/screencapture-127-0-0-1-5500-Frontend-pages-wk-mngt-html-2024-02-16-14_48_08.png)
+
+### Card Page
+
+![Task Details Page](./Frontend/opscreen/screencapture-127-0-0-1-5500-Frontend-pages-wk-task-html-2024-02-16-15_08_00.png)
+
+### Table Page
+
+![Task Details Page](./Frontend/opscreen/screencapture-127-0-0-1-5500-Frontend-pages-wk-task-tab-html-2024-02-16-15_08_31.png)
+
+### Ghant Page
+
+![Task Details Page](./Frontend/opscreen/screencapture-127-0-0-1-5500-Frontend-pages-wk-task-chart-html-2024-02-16-15_09_45.png)
+
+### Pie Chart Page
+
+![Task Details Page](./Frontend/opscreen/screencapture-127-0-0-1-5500-Frontend-pages-wk-task-pie-html-2024-02-16-15_10_37.png)
 

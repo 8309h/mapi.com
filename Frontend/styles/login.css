@@ -136,3 +136,32 @@ form{
 #spanid{
     color: #0073ef;
 }
+
+/* Media queries for mobile screens */
+@media only screen and (max-width: 768px) {
+    #container {
+        flex-direction: column;
+    }
+
+    #left,
+    #right {
+        width: 100%;
+    }
+
+    #leftmaincont {
+        width: 80%;
+    }
+}
+
+/* Media queries for tablet screens */
+@media only screen and (max-width: 992px) {
+    #leftmaincont {
+        width: 70%;
+    }
+}
+
+
+
+
+
+

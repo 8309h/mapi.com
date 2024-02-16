@@ -115,3 +115,24 @@ background-color: #f6f7fb;
     padding: 10px 20px;
 
 }
+
+
+/* Media queries for tablet screens */
+@media only screen and (max-width: 768px) {
+    #sidenav {
+        width: 100%;
+    }
+}
+
+/* Media queries for mobile screens */
+@media only screen and (max-width: 576px) {
+    #sidenav {
+        gap: 10px;
+    }
+    #sidenav1 img {
+        width: 50%;
+    }
+    #sidenav1 > img:nth-child(1) {
+        margin-top: 5%;
+    }
+}
