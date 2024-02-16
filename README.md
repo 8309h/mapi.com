@@ -13,12 +13,33 @@ Welcome to Mapi.com! This is a Flask-based web application designed to help user
 - [License](#license)
 - [Screenshots](#screenshots)
 
-## Features
+<!-- ## Features
 
 - User registration and authentication
 - Creating, updating, and deleting tasks
 - Filtering tasks by various criteria (e.g., status, start date, board name)
 - Generating pie charts to visualize task status distribution
+Sure, here's a brief functionality overview that you can include in your repository:
+
+--- -->
+
+## Functionality Overview
+
+
+1. **User Registration and Authentication:** Users can securely register for new accounts and authenticate themselves to access the application.
+
+2. **Task Management:** Users can create, update, and delete tasks as needed. Each task can include details such as task name, description, start date, end date, assigned person, and task status.
+
+3. **Task Filtering:** Tasks can be filtered based on various criteria such as status (e.g., completed, in progress), start date, end date, board name, and person allocated.
+
+4. **Visualization:** The application provides visual aids to help users better understand their task status distribution. Users can generate pie charts to visualize the distribution of tasks across different statuses.
+
+5. **API Endpoints:** The Task Manager App offers a set of API endpoints to interact with the application programmatically. These endpoints enable functionalities such as user registration, task creation, task updates, task deletion, and task filtering.
+
+6. **Backend Technologies:** The backend of the application is built using Python and Flask, a micro web framework. MongoDB is used as the database to store task data, while Flask-JWT-Extended is utilized for JWT token-based authentication.
+
+7. **Frontend (Optional):** While the backend is implemented using Flask, the frontend can be developed using various technologies such as HTML, CSS, JavaScript, or modern frontend frameworks like React or Vue.js.
+
 
 ## Installation
 
