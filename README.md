@@ -23,7 +23,7 @@ Sure, here's a brief functionality overview that you can include in your reposit
 
 --- -->
 
-## Functionality Overview
+## Features
 
 
 1. **User Registration and Authentication:** Users can securely register for new accounts and authenticate themselves to access the application.
@@ -38,7 +38,7 @@ Sure, here's a brief functionality overview that you can include in your reposit
 
 6. **Backend Technologies:** The backend of the application is built using Python and Flask, a micro web framework. MongoDB is used as the database to store task data, while Flask-JWT-Extended is utilized for JWT token-based authentication.
 
-7. **Frontend (Optional):** While the backend is implemented using Flask, the frontend can be developed using various technologies such as HTML, CSS, JavaScript, or modern frontend frameworks like React or Vue.js.
+7. **Frontend (Optional):** While the backend is implemented using Flask, the frontend can be developed using various technologies such as HTML, CSS, JavaScript, chart.js
 
 
 ## Installation
