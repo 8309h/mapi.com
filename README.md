@@ -16,15 +16,7 @@ https://mymapi.netlify.app/
 - [License](#license)
 - [Screenshots](#screenshots)
 
-<!-- ## Features
 
-- User registration and authentication
-- Creating, updating, and deleting tasks
-- Filtering tasks by various criteria (e.g., status, start date, board name)
-- Generating pie charts to visualize task status distribution
-Sure, here's a brief functionality overview that you can include in your repository:
-
---- -->
 
 ## Features
 
@@ -41,11 +33,8 @@ Sure, here's a brief functionality overview that you can include in your reposit
 
 6. **Backend Technologies:** The backend of the application is built using Python and Flask, a micro web framework. MongoDB is used as the database to store task data, while Flask-JWT-Extended is utilized for JWT token-based authentication.
 
-<<<<<<< HEAD
-7. **Frontend (Optional):** While the backend is implemented using Flask, the frontend can be developed using various technologies such as HTML, CSS, JavaScript, chart.js.
-=======
-7. **Frontend (Optional):** While the backend is implemented using Flask, the frontend can be developed using various technologies such as HTML, CSS, JavaScript, chart.js
->>>>>>> 4c4ad8249bd6d4abfb570fe3e53927245f7a8af9
+7. **Frontend Technologies:** While the backend is implemented using Flask, the frontend can be developed using various technologies such as HTML, CSS, JavaScript, chart.js
+
 
 
 ## Installation
